@@ -1,7 +1,17 @@
-# sherlock_vep
+# ensembel-vep container for sherlock 2.0 cluster
 
-This git will build a container with VEP (https://uswest.ensembl.org/info/docs/tools/vep/script/vep_options.html) and data
-for Human GRCh37 and Yeast R64-1-1.
+## you got two options:
+
+This git will build a Singularity container with VEP (https://uswest.ensembl.org/info/docs/tools/vep/script/vep_options.html).
+It also install a plugin that is required by pVACseq.
+It is intended for Stanford's Sherlock 2.0 cluster but will work on any cluster with Singularity installed. 
+
+There are two options:
+
+* use the heavy "Singularity" version that preforms data installion for Human GRCh37 and Yeast R64-1-1 (modify the installed data as you wish).
+* use the light "Singularity-light" version that does not install data and install the data yourself.
+
+For the heavy option:
 
 If you need data for different genome change this part of the code accordingly:
 ```
@@ -14,10 +24,8 @@ perl /home/vep/src/ensembl-vep/INSTALL.pl -a acf -s homo_sapiens -y GRCh37 -c /h
 Notice that building this singularity with Human data take too long to run (few hours) and take considerable space (~50Gb during building and ~12Gb of final .simg file). If you do not need the human data installation remove  it. 
 The final .simg file will be a stanalone file of size ~12Gb.
 
-It also install a plugin that is required by pVACseq
 
-## Instructions for building
-
+## Instructions for building (heavy option)
 
 If you are working with macOS you will follow the following steps (if you are not using macOS you may need just clone git, cd into it and run the build step):
 
@@ -44,23 +52,66 @@ cd /vagrant/sherlock_vep
 ```
 sudo singularity build ensembl-vep Singularity
 ```
+9. scp the ensembl-vep to some working directory on Sherlock 2.0
 
-## running on Stanford's Sherlock cluster:
-1. scp the ensembl-vep to some working directory
-2. In order to use Singularity on Sherlock you need to load these modules:
+## Instructions for building (light option)
+
+You can follow the same instructions as above except you will use "Singularity_light".
+However you can also pull a pre-built to the cluster.
+
+On the cluster run:
+1. Create a working directory, say ~/work_dir.  
+```
+mkdir ~/work_dir;
+cd ~/work_dir;
+```
+2. pull the image:
+get Singularity (for Sherlock)
 ```
 module load system;
 module load singularity/2.4
 ```
-3. Now you can make sure it is running using:
+and run:
+```
+singularity pull --name ensembl-vep shub://eilon-s/sherlock_vep
+```
+3. Now you should have an ensembl-vep file in your current directory. Lets use it to install data in some location (here I am using Sherlock's $SCRATCH but you can replace by any directory). We are binding it to a directory that exists in the container for it to work.
+```
+singularity run --app install_vep --bind $SCRATCH/.vep:/home/vep/.vep ensembl-vep -a cf -s Saccharomyces_cerevisiae -y R64-1-1 -c /home/vep/.vep;
+```
+and maybe also human data:
+```
+singularity run --app install_vep --bind $SCRATCH/.vep:/home/vep/.vep ensembl-vep -a cf -s homo_sapiens -y GRCh37 -c /home/vep/.vep;
+```
+After that you should have the data on the cluster at the directory that you have provided (here: $SCRATCH/.vep).
+Since this data is not part of the container you will have to bind the data directory when you run vep by adding:
+```
+--bind $SCRATCH/.vep:/home/vep/.vep
+```
+
+
+
+## running on Stanford's Sherlock cluster:
+
+1. In order to use Singularity on Sherlock you need to load these modules:
+```
+module load system;
+module load singularity/2.4
+```
+2. Now you can make sure it is running using:
 ```
 singularity run ensembl-vep --help
 ```
-4. In order to run actual VCF files you need to bind your current directory (though in sherlock this is done by default). Assuming that you have inputfilename.vcf in your current directory, here is a possible command line:
+3. In order to run actual VCF files you need to bind your current directory (though in sherlock this is done by default). Assuming that you have inputfilename.vcf in your current directory, here is a possible command line:
+
+For the heavy version:
 ```
 singularity run --bind $PWD:$PWD ensembl-vep -i ./inputfilename.vcf -o ./outputfilename --cache --assembly GRCh37 --dir_cache /home/vep/.vep --dir_plugins /home/vep/.plugins --offline --format vcf --vcf --symbol --plugin Downstream --plugin Wildtype --terms SO
 ```
-Notice that the location of the genomes and the plugins
+For the light version you need to bind the directory that contain the genome files:
+```
+singularity run --bind $SCRATCH/.vep:/home/vep/.vep --bind $PWD:$PWD ensembl-vep -i ./inputfilename.vcf -o ./outputfilename --cache --assembly GRCh37 --dir_cache /home/vep/.vep --dir_plugins /home/vep/.plugins --offline --format vcf --vcf --symbol --plugin Downstream --plugin Wildtype --terms SO
+```
 
 ## VEP command line help:
 
