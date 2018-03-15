@@ -1,6 +1,13 @@
 # sherlock_vep
 
+This git will build a container with VEP (https://uswest.ensembl.org/info/docs/tools/vep/script/vep_options.html) and data
+for Human GRCh37 and Yeast R64-1-1.
+
+
+
 ## Instructions for building
+
+
 
 To build the container:
 
