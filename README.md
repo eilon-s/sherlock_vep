@@ -1,9 +1,9 @@
 # ensembel-vep container for sherlock 2.0 cluster
 
-## you got two options:
+## Two options - heavy and light:
 
 This git will build a Singularity container with VEP (https://uswest.ensembl.org/info/docs/tools/vep/script/vep_options.html).
-It also install a plugin that is required by pVACseq.
+It also installs a plugin that is required by pVACseq.
 It is intended for Stanford's Sherlock 2.0 cluster but will work on any cluster with Singularity installed. 
 
 There are two options:
@@ -13,7 +13,7 @@ There are two options:
 
 For the heavy option:
 
-If you need data for different genome change this part of the code accordingly:
+If you need data for different genomes change this part of the code accordingly:
 ```
 # install data for yeast BY
 perl /home/vep/src/ensembl-vep/INSTALL.pl -a acf -s Saccharomyces_cerevisiae -y R64-1-1 -c /home/vep/.vep;
@@ -21,13 +21,13 @@ perl /home/vep/src/ensembl-vep/INSTALL.pl -a acf -s Saccharomyces_cerevisiae -y 
 perl /home/vep/src/ensembl-vep/INSTALL.pl -a acf -s homo_sapiens -y GRCh37 -c /home/vep/.vep
 ```
 
-Notice that building this singularity with Human data take too long to run (few hours) and take considerable space (~50Gb during building and ~12Gb of final .simg file). If you do not need the human data installation remove  it. 
+Notice that building the heavy version with Human data takes few hours and considerable space (~50Gb during building and ~12Gb of final .simg file). If you do not need the human data installation remove it from the file. 
 The final .simg file will be a stanalone file of size ~12Gb.
 
 
 ## Instructions for building (heavy option)
 
-If you are working with macOS you will follow the following steps (if you are not using macOS you may need just clone git, cd into it and run the build step):
+If you are working with macOS you will follow the following steps (if you are using linux/unix run steps 2-3,7-...):
 
 1. Install a virtual machine (VM): https://www.vagrantup.com/
 2. Create a working directory and cd to it. Allow >50Gb disk space
