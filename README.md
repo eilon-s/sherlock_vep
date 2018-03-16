@@ -102,15 +102,16 @@ module load singularity/2.4
 ```
 singularity run ensembl-vep --help
 ```
-3. In order to run actual VCF files you need to bind your current directory (though in sherlock this is done by default). Assuming that you have inputfilename.vcf in your current directory, here is a possible command line:
+3. In order to run actual VCF files you need to bind your current directory (though in sherlock this is done by default, non sherlock users should add ```--bind $PWD:$PWD```). Assuming that you have inputfilename.vcf in your current directory, here is a possible command line:
+
 
 For the heavy version:
 ```
-singularity run --bind $PWD:$PWD ensembl-vep -i ./inputfilename.vcf -o ./outputfilename --cache --assembly GRCh37 --dir_cache /home/vep/.vep --dir_plugins /home/vep/.plugins --offline --format vcf --vcf --symbol --plugin Downstream --plugin Wildtype --terms SO
+singularity run ensembl-vep -i ./inputfilename.vcf -o ./outputfilename --cache --assembly GRCh37 --dir_cache /home/vep/.vep --dir_plugins /home/vep/.plugins --offline --format vcf --vcf --symbol --plugin Downstream --plugin Wildtype --terms SO
 ```
 For the light version you need to bind the directory that contain the genome files:
 ```
-singularity run --bind $SCRATCH/.vep:/home/vep/.vep --bind $PWD:$PWD ensembl-vep -i ./inputfilename.vcf -o ./outputfilename --cache --assembly GRCh37 --dir_cache /home/vep/.vep --dir_plugins /home/vep/.plugins --offline --format vcf --vcf --symbol --plugin Downstream --plugin Wildtype --terms SO
+singularity run --bind $SCRATCH/.vep:/home/vep/.vep ensembl-vep -i ./inputfilename.vcf -o ./outputfilename --cache --assembly GRCh37 --dir_cache /home/vep/.vep --dir_plugins /home/vep/.plugins --offline --format vcf --vcf --symbol --plugin Downstream --plugin Wildtype --terms SO
 ```
 
 ## VEP command line help:
