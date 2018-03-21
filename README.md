@@ -77,10 +77,12 @@ singularity pull --name ensembl-vep shub://eilon-s/sherlock_vep
 ```
 3. Now you should have an ensembl-vep file in your current directory. Lets use it to install data in some location (here I am using Sherlock's $SCRATCH but you can replace by any directory). We are binding it to a directory that exists in the container for it to work.
 ```
+mkdir -p $SCRATCH/.vep;
 singularity run --app install_vep --bind $SCRATCH/.vep:/home/vep/.vep ensembl-vep -a cf -s Saccharomyces_cerevisiae -y R64-1-1 -c /home/vep/.vep;
 ```
 and maybe also human data:
 ```
+mkdir -p $SCRATCH/.vep;
 singularity run --app install_vep --bind $SCRATCH/.vep:/home/vep/.vep ensembl-vep -a cf -s homo_sapiens -y GRCh37 -c /home/vep/.vep;
 ```
 After that you should have the data on the cluster at the directory that you have provided (here: $SCRATCH/.vep).
